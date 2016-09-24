@@ -1,0 +1,18 @@
+doctype html
+html(lang="en")
+  head
+    title= pageTitle
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
+    script(src="https://code.highcharts.com/stock/highstock.js")
+    script(src="https://code.highcharts.com/stock/modules/exporting.js")
+  body
+    include includes/current.pug
+    h1 Pug - node template engine
+    #container.col
+      if youAreUsingPug
+        p You are amazing
+      else
+        p Get on it!
+      p.
+        Pug is a terse and simple templating language with a
+        strong focus on performance and powerful features.
