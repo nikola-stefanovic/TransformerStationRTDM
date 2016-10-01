@@ -14,6 +14,7 @@ router.get("/", function(req, res){
   diagramCount++;
 });
 
-router.get("")
+
+
 
 module.exports = router;

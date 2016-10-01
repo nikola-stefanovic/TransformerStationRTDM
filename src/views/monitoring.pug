@@ -5,9 +5,16 @@ html(lang="en")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
     script(src="https://code.highcharts.com/stock/highstock.js")
     script(src="https://code.highcharts.com/stock/modules/exporting.js")
+    link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
   body
     include includes/current.pug
     h1 Pug - node template engine
+    input(class="w3-input" type="datetime-local" name="read_after")
+    select(class="w3-select w3-border" name="option")
+      option(value="" disabled selected) Choos your option
+      option(value="1") Choos 1
+
+    a(href="/logout") Logout
     #container.col
       if youAreUsingPug
         p You are amazing

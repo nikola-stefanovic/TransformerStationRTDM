@@ -24,7 +24,7 @@ transformer_locations.forEach(function(location){
     }else{
       console.log("Could not insert row!");
     }
-
+    
   });
 });
 

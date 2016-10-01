@@ -1,0 +1,23 @@
+html
+  head
+    title Trafo stanice
+    link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
+  body
+    table(class="w3-table-all w3-hoverable")
+      thead
+        tr(class="w3-brown")
+          th Lokacija
+          th Opis
+          th Omogućeno nadgledanje
+          th
+          th
+      - for (var i = 0; i < transformers.length; i++) {
+      tr
+        td #{transformers[i].ADDRESS}
+        td #{transformers[i].DESCRIPTION}
+        td #{transformers[i].MONITORING}
+        td
+          a(class="w3-text-blue" href="/director/transformer/edit/" + transformers[i].ID) Izmeni
+        td
+          a(class="w3-text-blue" href="/director/transformer/delete/" + transformers[i].ID) Izbriši
+      - }

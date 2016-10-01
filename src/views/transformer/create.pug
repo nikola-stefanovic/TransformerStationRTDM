@@ -1,0 +1,23 @@
+html
+  head
+    title Transformator - dodavanje
+  link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
+  body
+    div(class="w3-display-container w3-light-grey" style="height:100%")
+      div(class="w3-padding w3-display-middle w3-light-grey")
+        div(class="w3-container w3-blue-grey")
+          h2 Transformator
+        form(class="w3-container w3-border" action="" method="POST")
+          p
+            label(class="w3-label") Lokacija
+            input(class="w3-input w3-border" name="location" type="text" value="")
+          p
+
+            label(class="w3-label") Opis
+            br
+            textarea(class="w3-border" name="description" rows="4" cols="40")
+          p
+            input(class="w3-check" type="checkbox" name="monitoring" chekced="checked")
+            label(class="w3-validate") Dozvoli nadgledanje
+          p
+            button(class="w3-btn w3-blue-grey") Dodaj

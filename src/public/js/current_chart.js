@@ -12,7 +12,7 @@ $(function () {
 
         $(container).highcharts('StockChart', {
 
-            title: {
+          title: {
               text: 'AAPL stock price by minute'
           },
 
@@ -24,15 +24,29 @@ $(function () {
               gapGridLineWidth: 0
           },
 
+          yAxis: {
+            title:{
+              text:"Current (mA)"
+            }
+          },
+
           rangeSelector: {
               buttons: [{
-                  type: 'hour',
-                  count: 1,
-                  text: '1h'
+                  type: 'second',
+                  count: 10 ,
+                  text: '10S'
               }, {
-                  type: 'day',
+                  type: 'second',
+                  count: 30,
+                  text: '30S'
+              }, {
+                  type: 'minute',
                   count: 1,
-                  text: '1D'
+                  text: 'M'
+              },  {
+                  type: 'minute',
+                  count: 60,
+                  text: 'H'
               }, {
                   type: 'all',
                   count: 1,
@@ -41,22 +55,21 @@ $(function () {
               selected: 1,
               inputEnabled: false
           },
-            legend:{enabled:true},
-            plotOptions: {
-                series: {
-                    compare: 'percent'
-                }
-            },
 
-            tooltip: {
-                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-                valueDecimals: 2
-            },
+          legend: {
+            enabled:true
+          },
+
+          tooltip: {
+              pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+              valueSuffix: ' mA',
+              shared:true,
+              valueDecimals: 2
+          },
 
             series: seriesOptions
         });
     }
-
 
 
     var columnsName = ['IPAL','IPAA','IPAH'];
@@ -67,23 +80,23 @@ $(function () {
       url: 'http://localhost:3000/measurement/',
       data: JSON.stringify(send_data),
       success: function(data) {
-        alert(JSON.stringify(data));
-        var serie = getSerieByName('IPAL',data);
-        alert(JSON.stringify(serie));
-
-        seriesOptions[0] = {
-            name: 'IPAL',
-            data: serie
-        };
+        //alert(JSON.stringify(data));
+        //alert(JSON.stringify(serie));
+        $.each(columnsName, function(i, colName){
+          //alert(i + " " + colName);
+          var serie = extractSerieByName(colName,data);
+          seriesOptions[i] = {
+              name: colName,
+              data: serie
+          };
+        });
         createChart();
       },
       contentType: "application/json",
       dataType: 'json'
     });
 
-
-
-    function getSerieByName(columnName, data){
+    function extractSerieByName(columnName, data){
       var serie = [];
       var x,y;
       for(var i=0; i<data.length; i++){
@@ -93,26 +106,5 @@ $(function () {
       }
       return serie;
     }
-    /*$.each(names, function (i, name) {
-
-
-
-        $.getJSON('https://localhost:3000/' + location_id + '/' + read_before + '/' + read_after,    function (data) {
-
-            seriesOptions[i] = {
-                name: name,
-                data: data
-            };
-
-            // As we're loading the data asynchronously, we don't know what order it will arrive. So
-            // we keep a counter and create the chart when all the data is loaded.
-            seriesCounter += 1;
-
-            if (seriesCounter === names.length) {
-                createChart();
-            }
-        });
-    });*/
-
 
 });

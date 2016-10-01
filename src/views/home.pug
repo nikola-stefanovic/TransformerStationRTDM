@@ -1,5 +1,20 @@
 html
   head
     title= title
+    link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
   body
-    h1= message
+    div(class="w3-display-container w3-light-grey" style="height:100%")
+      div(class="w3-padding w3-display-middle")
+        div(class="w3-container w3-blue-grey")
+          h2 Autorizacija
+        form(class="w3-container w3-border" action="login" method="POST")
+          p
+            label(class="w3-label w3-text-blue") Ime
+            input(class="w3-input w3-border" name="username" type="text" value="" + username)
+          p
+            label(class="w3-label w3-text-blue") Šifra
+            input(class="w3-input w3-border" name="password" type="password")
+          p
+            p(class="w3-text-red") #{errorMsg}
+          p
+            button(class="w3-btn w3-blue-grey") OK

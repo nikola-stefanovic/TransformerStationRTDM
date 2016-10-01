@@ -3,33 +3,50 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var body_parser = require('body-parser');
+var expressSession = require('express-session');
+var cookieParser = require("cookie-parser");
 
 var db = require('./models/db_access.js');
 var MeasurementController = require('./controller/measurement.js');
 var UpdateReceiverController = require('./controller/update_receiver.js');
 var HomeController = require('./controller/home');
-var MonitoringController = require('./controller/monitoring');
+var OperatorController = require('./controller/operator.js');
+var DirectorController = require('./controller/director.js');
+var TransformerController = require('./controller/transformer.js');
 
-//prepare objecc for accessing database
+
+//prepare object for accessing database
 db.init(function(err){
   console.log(err);
 });
 
-//parse body inside post request
+//body parser middleware
+//it parses body inside post request
 app.use(body_parser.json());
+app.use(body_parser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
+
+//set session middleware
+app.use(cookieParser());
+app.use(expressSession({secret:'somesecrettokenhere', resave: true, saveUninitialized: true}));
 
 //define controllers
-app.use('/',HomeController);
-app.use('/monitoring',MonitoringController);
-app.use('/measurement',MeasurementController);
+app.use('/', HomeController);
+app.use('/operator', OperatorController);
+app.use('/measurement', MeasurementController);
+app.use('/director', DirectorController);
+app.use('/director/transformer', TransformerController);
 
 //set template engine
 app.set('views', __dirname + '/views')
 app.set('view engine', 'pug');
 
+//disable template caching - for debugging
+app.disable('view cache');
+
 //serve static files
 app.use(express.static('public'));
-
 
 app.get("/", function(res,req){
     res.sendFile(__dirname+'zoom.html');
