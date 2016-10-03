@@ -43,18 +43,14 @@ app.use('/director/operator', OperatorController);
 app.use('/monitoring', MonitoringController);
 
 //set template engine
-app.set('views', __dirname + '/views')
-app.set('view engine', 'pug');
+app.set('views', __dirname + '/views') //templates folder
+app.set('view engine', 'pug');  //templates extension
 
 //disable template caching - for debugging
 app.disable('view cache');
 
 //serve static files
 app.use(express.static('public'));
-
-app.get("/", function(res,req){
-    res.sendFile(__dirname+'zoom.html');
-});
 
 
 http.listen(3000, function(){

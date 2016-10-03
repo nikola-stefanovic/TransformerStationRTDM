@@ -192,6 +192,19 @@ exports.getTransformers = function(offset, limit, cb){
     });
 };
 
+exports.getAllTransformers = function(cb){
+  pool.getConnection((err, connection) =>{
+    if(err) return cb(err);
+    connection.execute("SELECT id,address FROM transformer_station",
+      [],
+      (err,result) => {
+        doRelease(connection);
+        if(err) return cb(err);
+        return cb(null, formattResult(result));
+    });
+  });
+};
+
 exports.getTransformerById = function(transformer_id, cb) {
   pool.getConnection((err, connection) =>{
 		if(err) return cb(err);

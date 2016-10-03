@@ -4,7 +4,16 @@ var db = require('../models/db_access.js');
 maxNumOfRows = 1000;
 
 router.get("/", function(req, res){
-  res.render("monitoring/monitoring")
+
+  db.getAllTransformers(function(err, transformers){
+    if(err){
+      console.log(err);
+      res.render('error',{errMsg:"Neuspešno učitanvanje liste transformatora!"});
+    }
+    console.log("Lista transformers: " + JSON.stringify(transformers));
+    res.render("monitoring/monitoring",{'transformers':transformers});
+  });
+
 });
 
 

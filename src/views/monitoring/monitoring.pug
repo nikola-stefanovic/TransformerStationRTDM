@@ -6,20 +6,31 @@ html(lang="en")
     script(src="https://code.highcharts.com/stock/highstock.js")
     script(src="https://code.highcharts.com/stock/modules/exporting.js")
     link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
-  body
+  body.w3-grey
     include current.pug
-    h1 Pug - node template engine
-    input(class="w3-input" type="datetime-local" name="read_after")
-    select(class="w3-select w3-border" name="option")
-      option(value="" disabled selected) Choos your option
-      option(value="1") Choos 1
+    div(class="w3-container w3-margin w3-light-grey")
+      span Pregled istorije merenja
+      a(class="w3-btn w3-blue w3-right w3-small w3-padding-tiny w3-margin" href="") Real time mod
+      div(class="w3-row w3-small")
 
-    a(href="/logout") Logout
-    #container.col
-      if youAreUsingPug
-        p You are amazing
-      else
-        p Get on it!
-      p.
-        Pug is a terse and simple templating language with a
-        strong focus on performance and powerful features.
+        span(class="w3-margin") Veličina
+        select(class="w3-border w3-white" name="option" style="width:auto")
+          option(value="" disabled selected) Izaberi prikaz
+          option(value="IPAL,APAA,IPAH") Faza A
+          option(value="IPAA,IPBA,IPCA") Srednje vrednosti struja faza
+
+        span(class="w3-margin") Lokacija
+        select(class="w3-border w3-white" name="option" style="width:auto")
+          option(value="" disabled selected) Izaberi transformator
+          - for (var i=0; i < transformers.length; i++){
+            option(value="" + transformers[i].ID) #{transformers[i].ADDRESS}
+          - }
+
+        span(class="w3-margin") U periodu od
+        input(class="w3-border w3-white" type="datetime-local" name="read_after" style="width:auto;")
+
+        span(class="w3-margin") do
+        input(class="w3-border w3-white" type="datetime-local" name="read_after" style="width:auto;")
+
+        a(class="w3-btn w3-white w3-padding-tiny w3-border w3-margin" ) Prikaži
+    div(class="w3-container" id="container") Ovde ide dijagram

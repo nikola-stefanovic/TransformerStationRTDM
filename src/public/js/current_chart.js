@@ -71,7 +71,6 @@ $(function () {
         });
     }
 
-
     var columnsName = ['IPAL','IPAA','IPAH'];
     var send_data = {location_id:41,read_after:"2005-04-27T18:44:13.000Z",read_before:"2025-04-27T18:44:16.000Z",columns:columnsName };
 
