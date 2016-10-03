@@ -1,11 +1,23 @@
 doctype html
-html(lang="en")
+html(lang="en" style="height:100%")
   head
-    title= pageTitle
+    title= Kontrola
     link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
-  body
-    div(class="w3-row")
+  body(style="height:100%")
+    div(class="w3-row-padding w3-margin")
       div(class="w3-col s6")
-        a(href="/director/transformer/list") Lista transformatora
-      div(class="w3-col s6").
-        Druga polovina
+        a(class="w3-btn w3-brown" href="/director/transformer/create" style="width:100%") Dodaj transformator
+      div(class="w3-col s6")
+        a(class="w3-btn w3-brown" href="/director/transformer/list" style="width:100%") Lista transformatora
+
+    div(class="w3-row-padding w3-margin")
+      div(class="w3-col s6")
+        a(class="w3-btn w3-brown" href="/director/operator/create" style="width:100%") Dodaj operatera
+      div(class="w3-col s6")
+        a(class="w3-btn w3-brown" href="/director/operator/list" style="width:100%")  Lista operatera
+
+    div(class="w3-row-padding w3-margin")
+      div(class="w3-col s6")
+        a(class="w3-btn w3-brown" href="/director/operator/create" style="width:100%") Podesi prijavljivanje
+      div(class="w3-col s6")
+        a(class="w3-btn w3-brown" href="/logout" style="width:100%")  Odjavi se

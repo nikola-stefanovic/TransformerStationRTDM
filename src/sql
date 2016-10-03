@@ -1,9 +1,19 @@
 CREATE TABLE TS_USER
-( name VARCHAR2(32) PRIMARY KEY,
+( id int PRIMARY KEY,
+  name VARCHAR2(32) UNIQUE,
   password VARCHAR2(32),
   role VARCHAR2(16) CHECK( role IN ('director','operator'))
 );
-INSERT INTO ts_user VALUES('director','director','director');
+INSERT INTO ts_user(NAME,PASSWORD,ROLE) VALUES('director','director','director');
+CREATE SEQUENCE ts_user_id_seq START WITH 1;
+CREATE OR REPLACE TRIGGER ts_user_id_tr
+BEFORE INSERT ON ts_user
+FOR EACH ROW
+BEGIN
+  SELECT ts_user_id_seq.NEXTVAL
+  INTO   :new.id
+  FROM   dual;
+END;
 
 
 
@@ -18,7 +28,6 @@ CREATE SEQUENCE transformer_id_seq START WITH 1;
 CREATE OR REPLACE TRIGGER transformer_id_tr
 BEFORE INSERT ON transformer_station
 FOR EACH ROW
-
 BEGIN
   SELECT transformer_id_seq.NEXTVAL
   INTO   :new.id

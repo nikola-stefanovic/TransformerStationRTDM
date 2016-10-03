@@ -252,3 +252,83 @@ exports.addTransformer = function(location, description, allowMonitoring, cb){
     });
   });
 };
+
+
+
+//------------------Operators---------------
+//operators pagination
+exports.getOperators = function(offset, limit, cb){
+  pool.getConnection((err, connection) =>{
+    if(err) return cb(err);
+    var query = "select * from ( " +
+                  "select name,row_number() "+
+                  "over (order by name)rn " +
+                  "from TS_USER ) " +
+                "where rn between :n and :m " +
+                "order by rn";
+    connection.execute(query,
+      [offset, offset+limit+1], //add one extra row
+      {outFormat:Object.ARRAY},
+      (err, operators) =>{
+        doRelease(connection);
+        if(err) return cb(err);
+
+        var hasMore = false;
+        if(operators.rows.length > limit){
+          hasMore = true;
+          operators.rows.pop(); //remove extra row
+        }
+
+        return cb(null, operators.rows);
+      });
+    });
+};
+
+exports.updateUser = function(oldusername, newusername, password, cb){
+  pool.getConnection((err, connection) =>{
+		if(err) return cb(err);
+    var query = "UPDATE ts_user " +
+            "SET name=:newusername, password=:password " +
+            "WHERE name=:oldusername";
+		connection.execute(query,
+			[newusername, password, oldusername],
+      {autoCommit:true},
+			(err, result) =>{
+				doRelease(connection);
+				if(err) return cb(err);
+				return cb(null, formattResult(result));
+			});
+	});
+};
+
+exports.deleteUser = function(username, cb) {
+  pool.getConnection((err, connection) =>{
+		if(err) return cb(err);
+		connection.execute("DELETE FROM ts_user WHERE name=:username",
+			[username],
+      {autoCommit:true},
+			(err, result) =>{
+        console.log("Izbrisan: " + username);
+				doRelease(connection);
+				if(err) return cb(err);
+				return cb(null, formattResult(result));
+			});
+	});
+};
+
+exports.addUser = function(username, password, role, cb){
+  pool.getConnection((err, connection) =>{
+    if(err) return cb(err);
+
+    var query = "INSERT INTO ts_user(name, password, role) " +
+                "VALUES (:username, :username, :role)";
+    connection.execute(query,
+      [username, password, role],
+      {autoCommit:true},
+      (err, result) =>{
+        doRelease(connection);
+        if(err) return cb(err);
+        return cb(null);
+    });
+  });
+};

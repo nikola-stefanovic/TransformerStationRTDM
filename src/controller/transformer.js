@@ -12,8 +12,7 @@ router.get("/list", function(req, res){
       console.log(err);
       return res.render("error",{errMsg:"Nije moguće pronaći transformatore."});
     }
-    console.log(JSON.stringify(transformers));
-    res.render('transformer/view',{transformers:transformers});
+    res.render('transformer/list',{transformers:transformers});
   });
 });
 
@@ -50,7 +49,7 @@ router.post("/create", function(req, res){
         console.log("Greška!" + err);
         return res.render("error",{errMsg:"Neuspešno dodavanje transformatora."});
       }
-      res.redirect("/director");
+      res.redirect("/director/transformer/list");
   });
 });
 
@@ -67,7 +66,7 @@ router.post("/edit/:id", function(req, res){
       console.log("Greška!" + err);
       return res.redirect("error",{errMsg:"Neuspešna izmena transformatora."});
     }
-    res.redirect("/director");
+    res.redirect("/director/transformer/list");
   });
 
 });

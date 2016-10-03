@@ -13,6 +13,8 @@ var HomeController = require('./controller/home');
 var OperatorController = require('./controller/operator.js');
 var DirectorController = require('./controller/director.js');
 var TransformerController = require('./controller/transformer.js');
+var OperatorController = require('./controller/operator.js');
+var MonitoringController = require('./controller/monitoring.js');
 
 
 //prepare object for accessing database
@@ -37,6 +39,8 @@ app.use('/operator', OperatorController);
 app.use('/measurement', MeasurementController);
 app.use('/director', DirectorController);
 app.use('/director/transformer', TransformerController);
+app.use('/director/operator', OperatorController);
+app.use('/monitoring', MonitoringController);
 
 //set template engine
 app.set('views', __dirname + '/views')

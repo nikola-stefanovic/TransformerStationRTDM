@@ -9,9 +9,9 @@ router.get("/", function(req, res){
   if(sess.username){
     //user is logged, redirect to the main page
     if(sess.username && sess.role == "director"){
-      res.redirect('director');
+      res.redirect('/director');
     }else if(sess.role == "operator") {
-      res.redirect('operator');
+      res.redirect('/monitoring');
     }else{
       console.log("HomeController: "+ sess.username + " " + sess.role);
     }
@@ -30,11 +30,10 @@ router.post("/login",function(req, res){
 
   //find user in database
   db.getUserByName(name, function(err, users){
-
     if(err){
       //databse error
       console.log(err);
-      res.render('home', { errorMsg: 'Greška na serveru!', username: ""});
+      return res.render('home', { errorMsg: 'Greška na serveru!', username: ""});
     }
 
     //check if login is correct
@@ -46,7 +45,7 @@ router.post("/login",function(req, res){
       if(users[0].ROLE == 'director')
         res.redirect("/director");
       else
-        res.redirect("/operator");
+        res.redirect("/monitoring");
     }else {
       //invalid login
       res.render('home', { errorMsg: 'Korisničko ime ili šifra nije validna!', username: name});
@@ -61,15 +60,9 @@ router.get("/logout", function(req, res){
   console.log("Logout request: " + JSON.stringify(sess));
   if(sess.username){
     //clear session
-    console.log("Brisem sesiju!");
     sess.destroy();
-    if(sess.username)
-      console.log("Sesija i dalje postoji!");
-
   }
-
   res.redirect("/");
-
 });
 
 router.get("/logout", function(req, res){
