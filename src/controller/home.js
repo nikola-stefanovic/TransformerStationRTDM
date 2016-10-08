@@ -57,16 +57,11 @@ router.post("/login",function(req, res){
 //request to http://localhost:3000/logout
 router.get("/logout", function(req, res){
   var sess = req.session;
-  console.log("Logout request: " + JSON.stringify(sess));
   if(sess.username){
     //clear session
     sess.destroy();
   }
   res.redirect("/");
-});
-
-router.get("/logout", function(req, res){
-
 });
 
 module.exports = router;

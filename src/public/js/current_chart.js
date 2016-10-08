@@ -1,109 +1,61 @@
+function checkInputs(columns, transformerId, readBefore, readAfter){
+  var res = {valid:true, msg:null};
+  if(!columns || !transformerId || !readAfter || !readBefore){
+    res.msg = "Nisu unete sve vrednosti.";
+    res.valid = false;
+  }else if(new Date(readBefore) <= new Date(readAfter)){
+    res.msg = "Nevalidan vremenski interval.";
+    res.valid = false;
+  }
+  return res;
+}
+
+
+
 $(function () {
+  var tc = new RTTransformerChart(container, 60*60);//container variable sets server
+  var columnsName = ['IPAL','IPAA','IPAH','VABL'];
+  tc.addEmptySerie("Napon");
 
-    var seriesOptions = [],
-        seriesCounter = 0,
-        names = ['IPAL'];
+  tc.onLoad(function(seriesArr){
+    // set up the updating of the chart each second
+    var series = seriesArr[0];
 
-    /**
-     * Create the chart when all data is loaded
-     * @returns {undefined}
-     */
-    function createChart() {
+    setInterval(function () {
+        var x = (new Date()).getTime(), // current time
+            y = Math.round(Math.random() * 100);
+        series.addPoint([x, y], true, true);
+    }, 1000);
+  });
 
-        $(container).highcharts('StockChart', {
+  tc.drawEmptyChart(41, "2005-04-27T18:44:13.000Z", "2025-04-27T18:44:16.000Z", columnsName);
 
-          title: {
-              text: 'AAPL stock price by minute'
-          },
 
-          subtitle: {
-              text: 'Using ordinal X axis'
-          },
+  //set initial values to datetime input element
+  $("#ts-read-after").attr("value", "2016-01-01T00:00");
+  $("#ts-read-before").attr("value","2017-01-01T00:00");
 
-          xAxis: {
-              gapGridLineWidth: 0
-          },
-
-          yAxis: {
-            title:{
-              text:"Current (mA)"
-            }
-          },
-
-          rangeSelector: {
-              buttons: [{
-                  type: 'second',
-                  count: 10 ,
-                  text: '10S'
-              }, {
-                  type: 'second',
-                  count: 30,
-                  text: '30S'
-              }, {
-                  type: 'minute',
-                  count: 1,
-                  text: 'M'
-              },  {
-                  type: 'minute',
-                  count: 60,
-                  text: 'H'
-              }, {
-                  type: 'all',
-                  count: 1,
-                  text: 'All'
-              }],
-              selected: 1,
-              inputEnabled: false
-          },
-
-          legend: {
-            enabled:true
-          },
-
-          tooltip: {
-              pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-              valueSuffix: ' mA',
-              shared:true,
-              valueDecimals: 2
-          },
-
-            series: seriesOptions
-        });
+  var showDiagramBtn = $("#ts-show-diagram").on('click', function(){
+    //get data from input controls
+    var columns = $("#ts-diagram-type").val();
+    var transformerId = $("#ts-transformer").val();
+    var readAfter = $("#ts-read-after").val();
+    var readBefore = $("#ts-read-before").val();
+    //check input values
+    var inputs = checkInputs(columns, transformerId, readBefore, readAfter);
+    if(!inputs.valid){
+      alert(inputs.msg);
+      return;
     }
+    var columnsArray = columns.split(",");
+    //destroy old chart
+    $('#container').highcharts().destroy();
+    //create and draw new chart
+    var tc = new TransformerChart(container);
 
-    var columnsName = ['IPAL','IPAA','IPAH'];
-    var send_data = {location_id:41,read_after:"2005-04-27T18:44:13.000Z",read_before:"2025-04-27T18:44:16.000Z",columns:columnsName };
+    tc.drawChart(transformerId, readBefore, readAfter, columnsArray);
 
-    $.ajax({
-      type: 'POST',
-      url: 'http://localhost:3000/measurement/',
-      data: JSON.stringify(send_data),
-      success: function(data) {
-        //alert(JSON.stringify(data));
-        //alert(JSON.stringify(serie));
-        $.each(columnsName, function(i, colName){
-          //alert(i + " " + colName);
-          var serie = extractSerieByName(colName,data);
-          seriesOptions[i] = {
-              name: colName,
-              data: serie
-          };
-        });
-        createChart();
-      },
-      contentType: "application/json",
-      dataType: 'json'
-    });
+  });
 
-    function extractSerieByName(columnName, data){
-      var serie = [];
-      var x,y;
-      for(var i=0; i<data.length; i++){
-        x = Date.parse(data[i]['READ_TIME']);
-        y = data[i][columnName];
-        serie.push([x, y]);
-      }
-      return serie;
-    }
-
+  //tc.drawEmptyChart();
 });

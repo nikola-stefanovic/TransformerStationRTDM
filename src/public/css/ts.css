@@ -1,0 +1,26 @@
+.wrapper {
+  min-width: 250px; /* Minimum width of your wrapper element */
+  overflow: hidden;
+  display: inline-block;
+  margin-top: 5px;
+
+}
+
+.chart-wrapper{
+  margin: 5px;
+  width: inherit;
+}
+
+select, input{
+    min-height: 30px;
+}
+
+
+a{
+  margin-left: 5px;
+}
+
+
+html, body{
+  height:101%;
+}

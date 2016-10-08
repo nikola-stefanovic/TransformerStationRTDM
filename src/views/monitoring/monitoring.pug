@@ -6,31 +6,16 @@ html(lang="en")
     script(src="https://code.highcharts.com/stock/highstock.js")
     script(src="https://code.highcharts.com/stock/modules/exporting.js")
     link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
-  body.w3-grey
-    include current.pug
-    div(class="w3-container w3-margin w3-light-grey")
-      span Pregled istorije merenja
-      a(class="w3-btn w3-blue w3-right w3-small w3-padding-tiny w3-margin" href="") Real time mod
-      div(class="w3-row w3-small")
+    link(rel="stylesheet" href="css/ts.css")
 
-        span(class="w3-margin") Veličina
-        select(class="w3-border w3-white" name="option" style="width:auto")
-          option(value="" disabled selected) Izaberi prikaz
-          option(value="IPAL,APAA,IPAH") Faza A
-          option(value="IPAA,IPBA,IPCA") Srednje vrednosti struja faza
+    //-My scripts
+    script.
+      var container = '#' + "container";
+    script(src="/js/RTTransformerChart.js")
+    script(src="/js/TransformerChart.js")
+    script(src="/js/TCConrol.js")
+    script(src="/js/MultipleChart.js")
+    script(src="/js/chart_builder.js")
 
-        span(class="w3-margin") Lokacija
-        select(class="w3-border w3-white" name="option" style="width:auto")
-          option(value="" disabled selected) Izaberi transformator
-          - for (var i=0; i < transformers.length; i++){
-            option(value="" + transformers[i].ID) #{transformers[i].ADDRESS}
-          - }
-
-        span(class="w3-margin") U periodu od
-        input(class="w3-border w3-white" type="datetime-local" name="read_after" style="width:auto;")
-
-        span(class="w3-margin") do
-        input(class="w3-border w3-white" type="datetime-local" name="read_after" style="width:auto;")
-
-        a(class="w3-btn w3-white w3-padding-tiny w3-border w3-margin" ) Prikaži
-    div(class="w3-container" id="container") Ovde ide dijagram
+  body(class="w3-grey")
+    div(class="" id="container")
