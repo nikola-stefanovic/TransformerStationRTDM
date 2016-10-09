@@ -4,7 +4,7 @@ var db = require('../models/db_access.js');
 
 
 
-//check autorzation before processing request
+//check autorzation before processing a request
 router.use(function(req, res, next){
   var sess = req.session;
   //if user isn't logged or does not have permission

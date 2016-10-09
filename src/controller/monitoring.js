@@ -2,20 +2,24 @@ var router = require('express').Router();
 var db = require('../models/db_access.js');
 
 maxNumOfRows = 1000;
+//TODO: iskomentariši i izbaci višak
 
-router.get("/", function(req, res){
-
+router.get("/history", function(req, res){
+  //TODO:učitaj listu transformatora za korisnika i prosledi je
   db.getAllTransformers(function(err, transformers){
     if(err){
       console.log(err);
       res.render('error',{errMsg:"Neuspešno učitanvanje liste transformatora!"});
     }
     console.log("Lista transformers: " + JSON.stringify(transformers));
-    res.render("monitoring/monitoring",{'transformers':transformers});
+    res.render("monitoring/history",{'transformers':transformers});
   });
 
 });
 
+router.get("/real_time", function(req, res){
+  res.render("monitoring/real_time")
+});
 
 //find rows by location id and read time interval
 router.get("/loc-read-time/:location_id/:read_after/:read_before", function(req, res, next){

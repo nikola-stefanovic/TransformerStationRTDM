@@ -160,9 +160,6 @@ TransformerChart.prototype._getData = function(location_id, read_after, read_bef
   });
 };
 
-TransformerChart.prototype.setTitle = function(title){
-  this.chartSettings.title = {text:title};
-};
 
 TransformerChart.prototype.setTitle = function(title){
   this.chartSettings.title = {text:title};

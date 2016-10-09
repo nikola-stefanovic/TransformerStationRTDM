@@ -51,6 +51,7 @@ MultipleChart.prototype.addChart = function(chart_cont, appendAfter){
   return wrapper;
 };
 
+
 /**
  * Create buttons for deleting and adding chart.
  */

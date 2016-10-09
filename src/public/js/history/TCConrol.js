@@ -8,8 +8,9 @@
  * transformatora i njihove identifikatore.
  */
 function TCControl(diagrams, transformers){
-  this.diagrams = [{name:"Struja",value:"IPAL,IPAA,IPAH"},
-                  {name:"Napon", value:"IPAA,IPBA,IPCA"}];
+  this.diagrams = [{name:"Struja",value:"IPAL,IPAA,IPAH", unitMeasure:"Current (mA)"},
+                  {name:"Napon", value:"IPAA,IPBA,IPCA", unitMeasure:"Current (mA)"}];
+
   this.transformers = [{name:"Transformer a", id:41},
                       {name:"Transformer b", id:15}];
 

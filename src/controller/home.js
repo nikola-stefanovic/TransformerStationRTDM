@@ -45,7 +45,7 @@ router.post("/login",function(req, res){
       if(users[0].ROLE == 'director')
         res.redirect("/director");
       else
-        res.redirect("/monitoring");
+        res.redirect("/monitoring/history");
     }else {
       //invalid login
       res.render('home', { errorMsg: 'Korisničko ime ili šifra nije validna!', username: name});

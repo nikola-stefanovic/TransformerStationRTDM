@@ -5,17 +5,19 @@ html(lang="en")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
     script(src="https://code.highcharts.com/stock/highstock.js")
     script(src="https://code.highcharts.com/stock/modules/exporting.js")
+    script(src="/socket.io/socket.io.js")
     link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
-    link(rel="stylesheet" href="css/ts.css")
+    link(rel="stylesheet" href="../css/ts.css")
+    link(rel="stylesheet" href="../css/switch.css")
 
     //-My scripts
     script.
-      var container = '#' + "container";
-    script(src="/js/RTTransformerChart.js")
-    script(src="/js/TransformerChart.js")
-    script(src="/js/TCConrol.js")
-    script(src="/js/MultipleChart.js")
-    script(src="/js/chart_builder.js")
+      var container = "#container";
+    script(src="/js/realtime/DataProvider.js")
+    script(src="/js/realtime/RTCControl.js")
+    script(src="/js/realtime/RTTransformerChart.js")
+    script(src="/js/realtime/RTMultipleChart.js")
+    script(src="/js/realtime/test_main.js")
 
   body(class="w3-grey")
     div(class="" id="container")

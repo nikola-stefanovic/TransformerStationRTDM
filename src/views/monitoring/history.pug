@@ -1,0 +1,25 @@
+doctype html
+html(lang="en")
+  head
+    title= pageTitle
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
+    script(src="https://code.highcharts.com/stock/highstock.js")
+    script(src="https://code.highcharts.com/stock/modules/exporting.js")
+    link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
+    link(rel="stylesheet" href="../css/ts.css")
+
+
+    script.
+      //-main program
+      var container = "#container";
+      $(function () {
+        var chartsPage = new MultipleChart("#container");
+      });
+
+    //-my classes
+    script(src="/js/history/TransformerChart.js")
+    script(src="/js/history/TCConrol.js")
+    script(src="/js/history/MultipleChart.js")
+
+  body(class="w3-grey")
+    div(class="" id="container")
