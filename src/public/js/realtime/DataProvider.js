@@ -1,17 +1,17 @@
+/**
+ * Obezbeđuje komunikaciju sa serverom preko soketa.
+ */
 function DataProvider(){
-  //TODO:konektuje se na pogrešan server
-  this.socket = io('http://localhost:4000/');
+  this.socket = io('http://localhost:3000/');
 
   //create associative array
-  //key is location id, while value array of listeners
+  //key is location id, while the value is array of listeners
   this.observers = {};
 
-  // add a connect listener
   this.socket.on('connect', function(socket) {
-    console.log('Connected!');
+    console.log('Socket: connected!');
   });
 
-  //41, 42, 61, 90
 }
 
 DataProvider.prototype.addListener = function(location_id, cb){
@@ -52,5 +52,5 @@ DataProvider.prototype._starReceivingUpdate = function(locationId) {
 };
 
 DataProvider.prototype._stopReceivingUpdate = function(locationId){
-  this.socket.removeListener(""+locationId);
+  this.socket.removeListener(locationId);
 };

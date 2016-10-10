@@ -16,7 +16,7 @@ MultipleChart.prototype.addChart = function(chart_cont, appendAfter){
     wrapper.insertAfter(chart_cont);
   }
   //create control panel for chart
-  var controlPanel = new TCControl();
+  var controlPanel = new TCControl(diagramDescription,transformerDescription);
   controlPanel.appendTo(wrapper);
   //create empty chart
   var initialChart = new TransformerChart();
@@ -35,7 +35,7 @@ MultipleChart.prototype.addChart = function(chart_cont, appendAfter){
     }
     //recreate chart
     chart.destroy();
-    chart = new TransformerChart(wrapper);
+    chart = new TransformerChart(controlPanel.getSelectedDiagramDescription());
     chart.prependTo(footer);
     var diagram = controlPanel.getSelectedDiagram();
     var transId = controlPanel.getSelectedTransformer();
@@ -43,6 +43,7 @@ MultipleChart.prototype.addChart = function(chart_cont, appendAfter){
     var readBefore = controlPanel.getReadBefore()
     chart.drawChart(transId, readAfter, readBefore, diagram);
     chart.setTitle(controlPanel.getSelectedDiagramName());
+    chart.setYAxisTitle(controlPanel.getSelectedDiagramYtitle());
 
   });
 

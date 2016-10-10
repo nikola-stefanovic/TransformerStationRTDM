@@ -3,7 +3,9 @@ var router = express.Router();
 var db = require('../models/db_access.js');
 
 
-//show page with details about operators
+/**
+ * Prikazuje stranicu sa listom operatora.
+ */
 router.get("/list", function(req, res){
   //TODO: paginacija
   var offset = 0;
@@ -13,17 +15,20 @@ router.get("/list", function(req, res){
       console.log(err);
       return res.render("error",{errMsg:"Nije moguće pronaći operatore."});
     }
-
     res.render('operator/list',{operators:operators});
   });
 });
 
-//show 'create' page
+/**
+ * Prikazuje stranu za dodavanje novog operatora.
+ */
 router.get("/create", function(req, res){
   res.render("operator/create");
 });
 
-//show 'edit' page
+/**
+ * Prikazuje stranu za izmenu informacija o operatoru.
+ */
 router.get("/edit/:name", function(req, res){
 
   var operator_name = req.params.name;//sesija
@@ -42,7 +47,9 @@ router.get("/edit/:name", function(req, res){
 
 
 
-//insert operator in database
+/**
+ * Dodaje operatora u bazu podataka.
+ */
 router.post("/create", function(req, res){
   var body = req.body;
   var username = body.username;
@@ -65,10 +72,11 @@ router.post("/create", function(req, res){
         res.redirect("/director/operator/list");
     });
   });
-
 });
 
-//update operator in database
+/**
+ * Apdejtuje operatora u bazi.
+ */
 router.post("/edit", function(req, res){
   var body = req.body;
   var newusername = body.username;
@@ -86,7 +94,9 @@ router.post("/edit", function(req, res){
 
 });
 
-//delete transformer in database
+/**
+ * Brisanje operatora iz baze.
+ */
 router.get("/delete/:username", function(req, res){
   //delete transformer from database
   var username = req.params.username;

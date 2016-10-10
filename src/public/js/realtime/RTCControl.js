@@ -1,22 +1,19 @@
 /**
  * Omogućuje kreiranje panela koji sadrži kontrole za izbor: dijagrama,
  * transformatora i za aktiviranje 'real time' prikaza.
- * @param {object} diagrams     lista dijagrama sa nazivom dijagrama i
+ * @param {object} diagramDescription     lista dijagrama sa nazivom dijagrama i
  * skupom veličina koje taj dijagram prikazuje.
- * @param {object} transformers lista transformata koja sadrži nazive
+ * @param {object} transformerDescription lista transformata koja sadrži nazive
  * transformatora i njihove identifikatore.
  */
-function RTCControl(diagrams, transformers){
-  this.diagrams = [{name:"Struja",value:"IPAL,IPAA,IPAH", unitMeasure:"Current (mA)"},
-                  {name:"Napon", value:"IPAA,IPBA,IPCA", unitMeasure:"Current (mA)"}];
-
-  this.transformers = [{name:"Transformer a", id:41},
-                      {name:"Transformer b", id:90}];
+function RTCControl(diagramDescription, transformerDescription){
+  this.diagramDescription = diagramDescription;
+  this.transformerDescription = transformerDescription;
 
   this.root = $('<div/>').addClass("w3-container w3-light-grey");
   //create 'options' html elements
-  this.diagramSelect = this._oDiagrams(this.diagrams);
-  this.transformerSelect = this._oTransformer(this.transformers);
+  this.diagramSelect = this._oDiagrams(this.diagramDescription);
+  this.transformerSelect = this._oTransformer(this.transformerDescription);
   this.monitoringSwitch = this._oMonitoringSwitch();
   //connect 'options' html elements
   this._connectElements();
@@ -24,7 +21,7 @@ function RTCControl(diagrams, transformers){
 
 /**
  * Create 'select' html element which represents different
- * types of diagrams (values) that can be shown.
+ * types of diagrams that can be shown.
  * @return {html element} created select element
  */
 RTCControl.prototype._oDiagrams = function(diagrams){
@@ -124,14 +121,29 @@ RTCControl.prototype.controlsDisabled = function(disabled){
 
 RTCControl.prototype.getSelectedDiagramName = function(){
   var selectedDiagramIndex =  this.diagramSelect.prop('selectedIndex');
-  return this.diagrams[selectedDiagramIndex].name;
+  return this.diagramDescription[selectedDiagramIndex].name;
+};
+
+RTCControl.prototype.getSelectedTransformerName = function(){
+  var selectedTransformerIndex =  this.diagramSelect.prop('selectedIndex');
+  return this.transformerDescription[selectedTransformerIndex].name;
+};
+
+RTCControl.prototype.getSelectedDiagramYtitle= function(){
+  var selectedDiagramIndex =  this.diagramSelect.prop('selectedIndex');
+  return this.diagramDescription[selectedDiagramIndex].unitMeasure;
+};
+
+RTCControl.prototype.getSelectedDiagramDescription = function(){
+  var selectedDiagramIndex =  this.diagramSelect.prop('selectedIndex');
+  return this.diagramDescription[selectedDiagramIndex];
 };
 
 RTCControl.prototype.getSelectedDiagram = function(){
   return this.diagramSelect.val().split(",");
 };
 
-RTCControl.prototype.getSelectedTransformer = function(){
+RTCControl.prototype.getSelectedTransformerValue = function(){
   return this.transformerSelect.val();
 };
 

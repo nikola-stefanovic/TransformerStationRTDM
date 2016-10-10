@@ -1,9 +1,18 @@
 var router = require('express').Router();
 var db = require('../models/db_access.js');
 
-maxNumOfRows = 1000;
-//TODO: iskomentariši i izbaci višak
+maxNumOfRows = 1000; //TODO: Mislim da može -1 za beskonačno
 
+/**
+ * Prikazuje početnu stranicu operatora.
+ */
+router.get("/", function(req, res){
+  res.render("operator");
+});
+
+/**
+ * Prikaz strane za pregled istorije merenja.
+ */
 router.get("/history", function(req, res){
   //TODO:učitaj listu transformatora za korisnika i prosledi je
   db.getAllTransformers(function(err, transformers){
@@ -11,17 +20,18 @@ router.get("/history", function(req, res){
       console.log(err);
       res.render('error',{errMsg:"Neuspešno učitanvanje liste transformatora!"});
     }
-    console.log("Lista transformers: " + JSON.stringify(transformers));
     res.render("monitoring/history",{'transformers':transformers});
   });
-
 });
 
+/**
+ * Prikaz strane za prećenje u realnom vremenu.
+ */
 router.get("/real_time", function(req, res){
   res.render("monitoring/real_time")
 });
 
-//find rows by location id and read time interval
+//TODO: mislim da je ovo višak jer koristim samo POST metod
 router.get("/loc-read-time/:location_id/:read_after/:read_before", function(req, res, next){
   var locationId = req.params.location_id;
   var readAfter = new Date(req.params.read_after);
@@ -38,7 +48,10 @@ router.get("/loc-read-time/:location_id/:read_after/:read_before", function(req,
   });
 });
 
-//find rows by location id and read time interval
+/**
+ * Na POST zahtev vraća redove iz baze o izmerenim veličinama
+ * za određenu lokaciju i određeni vremenski interval.
+ */
 router.post("/", function(req, res, next){
   var body = req.body;
   var location_id = body.location_id;
@@ -63,9 +76,5 @@ router.post("/", function(req, res, next){
   });
 
 });
-
-
-
-
 
 module.exports = router;

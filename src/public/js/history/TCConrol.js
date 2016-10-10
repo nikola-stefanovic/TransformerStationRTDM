@@ -7,17 +7,14 @@
  * @param {object} transformers lista transformata koja sadrži nazive
  * transformatora i njihove identifikatore.
  */
-function TCControl(diagrams, transformers){
-  this.diagrams = [{name:"Struja",value:"IPAL,IPAA,IPAH", unitMeasure:"Current (mA)"},
-                  {name:"Napon", value:"IPAA,IPBA,IPCA", unitMeasure:"Current (mA)"}];
-
-  this.transformers = [{name:"Transformer a", id:41},
-                      {name:"Transformer b", id:15}];
+function TCControl(diagramDescription, transformerDescription){
+  this.diagramDescription = diagramDescription;
+  this.transformerDescription = transformerDescription;
 
   this.root = $('<div/>').addClass("w3-container w3-light-grey");
   //create 'options' html elements
-  this.diagramSelect = this._oDiagrams(this.diagrams);
-  this.transformerSelect = this._oTransformer(this.transformers);
+  this.diagramSelect = this._oDiagrams(this.diagramDescription);
+  this.transformerSelect = this._oTransformer(this.transformerDescription);
   this.afterDatetime = this._oDatetimePicker("2015-01-01T00:00");
   this.beforeDatetime = this._oDatetimePicker("2017-01-01T00:00");
   this.showButton = this._oShowButton();
@@ -134,7 +131,17 @@ TCControl.prototype.onShowButtonClicked = function(cb){
 
 TCControl.prototype.getSelectedDiagramName = function(){
   var selectedDiagramIndex =  this.diagramSelect.prop('selectedIndex');
-  return this.diagrams[selectedDiagramIndex].name;
+  return this.diagramDescription[selectedDiagramIndex].name;
+};
+
+TCControl.prototype.getSelectedDiagramDescription = function(){
+  var selectedDiagramIndex =  this.diagramSelect.prop('selectedIndex');
+  return this.diagramDescription[selectedDiagramIndex];
+};
+
+TCControl.prototype.getSelectedDiagramYtitle= function(){
+  var selectedDiagramIndex =  this.diagramSelect.prop('selectedIndex');
+  return this.diagramDescription[selectedDiagramIndex].unitMeasure;
 };
 
 TCControl.prototype.getSelectedDiagram = function(){

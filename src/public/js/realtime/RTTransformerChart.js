@@ -1,13 +1,13 @@
-function RTTransformerChart(chartWidthSeconds,seriesArray){
+function RTTransformerChart(chartWidthSeconds, diagramDescription){
+  //TODO: vidi šta je višak i izbaci ga
   this.service = 'http://localhost:3000/measurement/';
+  this.diagramDescription = diagramDescription;
+  this.chartWidthSeconds = chartWidthSeconds;
+
   this.container = $('<div/>');
   this.chartSettings = this._chartSettingsDefault();
   this.series = this.chartSettings.series;
-  this.measuresArray = seriesArray;
-  this.chartWidthSeconds = chartWidthSeconds;
-  this.listeningLocationId = -1;
-  this.updateCounter = 0;
-  this.updateSerie.series = this.series;
+  this.seriesInitialized = false;
   this.chart;
 }
 
@@ -17,8 +17,7 @@ RTTransformerChart.prototype.drawEmptyChart = function(){
 
 
 /**
- * Default settings for Highstock chart.
- * @return {Chart} object that is used to configute chart.
+ * Definiše objekat koji se koristi za inicijalizaciju Highchart grafika.
  */
 RTTransformerChart.prototype._chartSettingsDefault = function(){
   var self = this;
@@ -55,7 +54,11 @@ RTTransformerChart.prototype._chartSettingsDefault = function(){
               type: 'minute',
               count: 2,
               text: '2M'
-          }, {
+          },  {
+              type: 'minute',
+              count: 5,
+              text: '5M'
+          },  {
               type: 'minute',
               count: 10,
               text: '10M'
@@ -87,9 +90,12 @@ RTTransformerChart.prototype._chartSettingsDefault = function(){
 
 
 /**
- * Generate serie with y values set to 0.
- * @param  {int} widthInSeconds is x axis width.
- * @return {[[x,y],[x,y],[x,y]...]} a serie.
+ * Generiše seriju 2D tačaka koje se koriste za inicijalizaciju grafika.
+ * Ovo neophodno zato što Highchart biblioteka ne omogućava dinamičko
+ * dodavanje tačaka na prazan grafik.
+ * @param  {int} widthInSeconds definiše veličinu x ose.
+ * @param  {Date} initTime vrednost poslednje tačke na x osi.
+ * @return {[[x,y],[x,y],[x,y]...]} seriju tačaka gede je y=0.
  */
 RTTransformerChart.prototype._initSerieData = function(widthInSeconds, initTime){
   var data = [],
@@ -97,13 +103,11 @@ RTTransformerChart.prototype._initSerieData = function(widthInSeconds, initTime)
       time,
       i;
 
-      if(!initTime)
-        time = (new Date()).getTime();
-      else
-        time = initTime;
+  if(!initTime)
+    time = (new Date()).getTime();
+  else
+    time = initTime;
 
-      //time = time - 2*365*24*60*60*1000;
-  //x is an element of [currentTime - widthInSeconds, currentTime], while y=0
   for (i = -widthInSeconds; i <= 0; i += 1) {
       data.push([
           time + i * 1000,
@@ -121,6 +125,9 @@ RTTransformerChart.prototype.addEmptySerie = function(serieName, initTime){
     this.chart.addSeries({name:serieName, data:seriesData},true);
 };
 
+/**
+ * Uništava kompletan grafik.
+ */
 RTTransformerChart.prototype.destroy = function(){
   this.container.highcharts().destroy();
 };
@@ -129,8 +136,12 @@ RTTransformerChart.prototype.setTitle = function(title){
   this.chartSettings.title = {text:title};
 };
 
-RTTransformerChart.prototype.setYAxis = function(yAxis){
-  this.chartSettings.yAxis = {title:{text:yAxis}};
+RTTransformerChart.prototype.setSubtitle = function(title){
+  this.chartSettings.subtitle = {text:title};
+};
+
+RTTransformerChart.prototype.setYAxisTitle = function(yAxisTitle){
+  this.chartSettings.yAxis = {title:{text:yAxisTitle}};
 };
 
 RTTransformerChart.prototype.appendTo = function(element){
@@ -141,37 +152,28 @@ RTTransformerChart.prototype.prependTo = function(element){
   this.container.prependTo(element);
 };
 
-RTTransformerChart.prototype.updateSerie = function(row){
-  //alert("Stigao red" + JSON.stringify(row));
-  if(this.updateCounter == 0)
-    this.addEmptySerie("A", Date.parse(row.READ_TIME));
-
-  this.updateCounter++;
-
-  //var x = (new Date()).getTime(); // current time
-      //var y = Math.round(Math.random() * 100);
-  //if(this.series[0].data.length ==0)alert("velicina je 0");
-  var x = Date.parse(row.READ_TIME);
-  var y = row.EPTC % 100;
-  console.log("x=" + x +" y=" + y);
-  //this.series[0].addPoint([x, y], true, true);
- this.series[0].addPoint([x, y], true, true); //true / false to redraw
-  //alert("Dodato");
-};
-
 /**
- * Return array of series. Series are needed for live update.
+ * Metod apdejtuje dijagram dodavanjem po jedne nove vrednosti
+ * svakoj liniji na dijagramu.
+ * @param  {object} row sadrži vrednosti poslednjeg merenja.
  */
-RTTransformerChart.prototype.onLoad = function(cb){
-  var self = this;
-  this.chartSettings.chart = {
-    events:{
-      load:function(){
-        self.chart = this;
-        self.series = this.series;
-
-        cb(this.series);
-      }
+RTTransformerChart.prototype.updateSerie = function(row){
+  //initialize series
+  if(!this.seriesInitialized){
+    for(var i=0; i<this.diagramDescription.labels.length; i++)
+    {
+      this.addEmptySerie(this.diagramDescription.labels[i], Date.parse(row.READ_TIME));
     }
-  };
-}
+
+    this.seriesInitialized = true;
+  }
+
+  //add a point to series
+  var x = Date.parse(row.READ_TIME);
+  var y;
+  var measures = this.diagramDescription.value.split(",");
+  for(var i=0; i<measures.length; i++){
+    y = row[measures[i]];
+    this.series[i].addPoint([x,y], true, true);
+  }
+};

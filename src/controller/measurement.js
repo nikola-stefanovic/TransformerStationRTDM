@@ -3,6 +3,8 @@ var db = require('../models/db_access.js');
 
 maxNumOfRows = 1000;
 
+//TODO:Preimenuj fajl i skomentraiši
+
 //find rows by location id and read time interval
 router.get("/loc-read-time/:location_id/:read_after/:read_before", function(req, res, next){
   var locationId = req.params.location_id;

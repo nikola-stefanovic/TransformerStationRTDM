@@ -6,9 +6,11 @@ var body_parser = require('body-parser');
 var expressSession = require('express-session');
 var cookieParser = require("cookie-parser");
 
+module.exports.io = io;
+
 var db = require('./models/db_access.js');
 var MeasurementController = require('./controller/measurement.js');
-var UpdateReceiverController = require('./controller/update_receiver.js');
+var TransUpdateReceiverController = require('./controller/transformer_updates_receiver.js');
 var HomeController = require('./controller/home');
 var OperatorController = require('./controller/operator.js');
 var DirectorController = require('./controller/director.js');
@@ -46,7 +48,7 @@ app.use('/monitoring', MonitoringController);
 app.set('views', __dirname + '/views') //templates folder
 app.set('view engine', 'pug');  //templates extension
 
-//disable template caching - for debugging
+//disable template caching - for debugging templates without restarting server
 app.disable('view cache');
 
 //serve static files

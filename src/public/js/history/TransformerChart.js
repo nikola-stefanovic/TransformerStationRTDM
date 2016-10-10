@@ -1,8 +1,9 @@
 /**
  * Klasa služi za iscrtavanje grafika pomoću Highchart biblioteke.
  */
-function TransformerChart(){
+function TransformerChart(diagramDescription){
   this.service = 'http://localhost:3000/measurement/';
+  this.diagramDescription = diagramDescription;
   this.seriesOptions = [];
   this.container = $('<div/>');
   this.chartSettings = this._chartSettingsDefault();
@@ -28,7 +29,7 @@ TransformerChart.prototype.drawChart = function(location_id, read_after, read_be
     $.each(columnsName, function(i, colName){
       var serie = self._extractSerieByName(colName,data);
       self.seriesOptions[i] = {
-          name: colName,
+          name: self.diagramDescription.labels[i],
           data: serie
       };
     });
@@ -179,4 +180,8 @@ TransformerChart.prototype.appendTo = function(element){
 
 TransformerChart.prototype.prependTo = function(element){
   this.container.prependTo(element);
+};
+
+TransformerChart.prototype.setYAxisTitle = function(yAxisTitle){
+  this.chartSettings.yAxis = {title:{text:yAxisTitle}};
 };

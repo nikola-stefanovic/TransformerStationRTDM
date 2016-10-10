@@ -10,14 +10,20 @@ html(lang="en")
     link(rel="stylesheet" href="../css/ts.css")
     link(rel="stylesheet" href="../css/switch.css")
 
-    //-My scripts
+
     script.
+      //-main program
       var container = "#container";
+      $(function () {
+        var charts = new RTMultipleChart("#container");
+      });
+
+    //-My scripts
+    script(src="/js/definitions.js")
     script(src="/js/realtime/DataProvider.js")
     script(src="/js/realtime/RTCControl.js")
     script(src="/js/realtime/RTTransformerChart.js")
     script(src="/js/realtime/RTMultipleChart.js")
-    script(src="/js/realtime/test_main.js")
 
   body(class="w3-grey")
     div(class="" id="container")

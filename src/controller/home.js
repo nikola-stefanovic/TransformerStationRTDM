@@ -2,7 +2,10 @@ var express = require('express');
 var router = express.Router();
 var db = require('../models/db_access.js');
 
-//request to http://localhost:3000/
+/**
+ * Prikazuje stranu za logovanje ukoliko korisnik nije logovan
+ * ili odgovarajuću početnu stranicu, u zavisnosti od autorizacije.
+ */
 router.get("/", function(req, res){
   var sess = req.session;
   //check if the session exist
@@ -21,7 +24,9 @@ router.get("/", function(req, res){
   }
 });
 
-
+/**
+ * Obrađuje zahtev za logovanje.
+ */
 router.post("/login",function(req, res){
   //get variables from body of post request
   var name = req.body.username;
@@ -45,7 +50,7 @@ router.post("/login",function(req, res){
       if(users[0].ROLE == 'director')
         res.redirect("/director");
       else
-        res.redirect("/monitoring/history");
+        res.redirect("/monitoring");
     }else {
       //invalid login
       res.render('home', { errorMsg: 'Korisničko ime ili šifra nije validna!', username: name});
@@ -54,7 +59,9 @@ router.post("/login",function(req, res){
   });
 });
 
-//request to http://localhost:3000/logout
+/**
+ * Odjavljuje korisnika.
+ */
 router.get("/logout", function(req, res){
   var sess = req.session;
   if(sess.username){
