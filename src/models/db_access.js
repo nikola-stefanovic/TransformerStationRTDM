@@ -165,7 +165,7 @@ exports.getUserByName = function(name, cb){
 };
 
 
-//find transformers in given interval
+//find transformers in given interval - pagination
 exports.getTransformers = function(offset, limit, cb){
   pool.getConnection((err, connection) =>{
     if(err) return cb(err);
@@ -193,6 +193,7 @@ exports.getTransformers = function(offset, limit, cb){
     });
 };
 
+//TODO: Mislim da se ne koristi.
 exports.getAllTransformers = function(cb){
   pool.getConnection((err, connection) =>{
     if(err) return cb(err);
@@ -298,6 +299,30 @@ exports.getOperators = function(offset, limit, cb){
     });
 };
 
+/**
+ * Vraća sve operatore, zajedno sa brojem transformatora koje nadgledaju.
+ */
+exports.getAllOperators = function(cb){
+  pool.getConnection((err, connection) =>{
+    if(err) return cb(err);
+    var query = "SELECT name, COUNT(operate.operator_id) TRANS_MONITORING "+
+            "FROM ts_user LEFT JOIN operate "+
+            "ON ts_user.id = operate.operator_id "+
+            "WHERE ts_user.role = 'operator' "+
+            "GROUP BY name";
+    connection.execute(query,
+      [], 
+      {outFormat:Object.ARRAY},
+      (err, operators) =>{
+        doRelease(connection);
+        if(err) return cb(err);
+        return cb(null, operators.rows);
+      });
+    });
+};
+
+
+
 exports.updateUser = function(oldusername, newusername, password, cb){
   pool.getConnection((err, connection) =>{
 		if(err) return cb(err);
@@ -344,5 +369,91 @@ exports.addUser = function(username, password, role, cb){
         if(err) return cb(err);
         return cb(null);
     });
+  });
+};
+
+/**
+ * Vraća transformatore koje operator može da nadgleda.
+ */
+exports.getOperatorsTransformers = function(operator_id, cb){
+  pool.getConnection((err, connection) =>{
+    if(err) return cb(err);
+
+    var query = "SELECT t.id, t.address " +
+                "FROM operate o JOIN transformer_station t " +
+                "ON o.transformer_id=t.id and o.operator_id = :operator_id " +
+                "WHERE t.monitoring != 0";
+    connection.execute(query,
+      [operator_id],
+      {autoCommit:true},
+      (err, result) =>{
+        doRelease(connection);
+        if(err) return cb(err);
+        return cb(null, result.rows);
+    });
+  });
+
+};
+
+
+
+/**
+ * Vraća sve transformatore, kao i informaciju o tome
+ * da li operator može da nadgleda vraćene transformatore.
+ */
+exports.getAssignedTransformers = function(operator_id, cb){
+  pool.getConnection((err, connection) =>{
+    if(err) return cb(err);
+
+    var query = "SELECT transformer_station.id trafo_id, transformer_station.address," +operator_id +" user_id, "
+    + "NVL(operate.id,0) allow_monitoring " +
+      "FROM transformer_station LEFT JOIN operate " +
+      "ON operate.transformer_id=transformer_station.id AND operate.operator_id = :operator_id";
+    connection.execute(query,
+      [operator_id],
+      {autoCommit:true},
+      (err, result) =>{
+        doRelease(connection);
+        if(err) return cb(err);
+        return cb(null, result.rows);
+    });
+  });
+
+};
+
+/**
+ * Dodeljuje dozvolu operateru da nadgleda transformator.
+ */
+exports.allowMonitoring = function(user_id, transformer_id, cb){
+  var query = "INSERT INTO operate(operator_id, transformer_id)"+
+              "VALUES(:user_id, :transformer_id)";
+  pool.getConnection((err, connection)=>{
+    if(err) return cb(err);
+    connection.execute(query,
+      [user_id, transformer_id],
+      {autoCommit:true},
+      (err, result)=>{
+        doRelease(connection);
+        if(err) return cb(err);
+        return cb(null);
+      });
+  });
+};
+
+/**
+ * Vrši zabranu operateru da nadgleda određeni transformator.
+ */
+exports.forbidMonitoring = function(user_id, transformer_id, cb){
+  var query = "DELETE FROM operate WHERE operator_id=:user_id AND transformer_id=:transformer_id";
+  pool.getConnection((err, connection)=>{
+    if(err) return cb(err);
+    connection.execute(query,
+      [user_id, transformer_id],
+      {autoCommit:true},
+      (err, result)=>{
+        doRelease(connection);
+        if(err) return cb(err);
+        return cb(null);
+      });
   });
 };

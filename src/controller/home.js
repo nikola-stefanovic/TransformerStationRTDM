@@ -46,6 +46,7 @@ router.post("/login",function(req, res){
       //set session
       sess.username = name;
       sess.role = users[0].ROLE;
+      sess.user_id = users[0].ID;
       //redirect to another page
       if(users[0].ROLE == 'director')
         res.redirect("/director");

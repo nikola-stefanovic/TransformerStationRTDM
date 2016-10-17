@@ -20,16 +20,4 @@ html
           p
             button(class="w3-btn w3-blue-grey") Izmeni
             a(class="w3-text-blue w3-right" href="/director/operator/list") Nazad
-
-        table(class="w3-table w3-striped w3-centered w3-border")
-          tr
-            th Transformator
-            th Nadgledanje
-          - for (var i = 0; i < transformers.length; i++) {
-          tr
-            td
-              span #{transformers[i].ADDRESS}
-            td
-              a(class="w3-text-blue" href="/director/operator/"+(transformers[i].ALLOW_MONITORING ? "forbid-monitoring/" : "allow-monitoring/") + operator.NAME +"/"+operator.ID+"/"+transformers[i].TRAFO_ID) #{transformers[i].ALLOW_MONITORING ? "Zabrani" : "Dozvoli"}
-          - }
       div(class="w3-col w3-third") &nbsp

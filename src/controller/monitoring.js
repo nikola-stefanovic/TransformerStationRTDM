@@ -7,20 +7,25 @@ maxNumOfRows = 1000; //TODO: Mislim da može -1 za beskonačno
  * Prikazuje početnu stranicu operatora.
  */
 router.get("/", function(req, res){
-  res.render("operator");
+  res.render("operator/home");
 });
 
 /**
  * Prikaz strane za pregled istorije merenja.
  */
 router.get("/history", function(req, res){
-  //TODO:učitaj listu transformatora za korisnika i prosledi je
-  db.getAllTransformers(function(err, transformers){
+  var operator_id = req.session.user_id;
+  db.getOperatorsTransformers(operator_id, function(err, transformers){
     if(err){
       console.log(err);
       res.render('error',{errMsg:"Neuspešno učitanvanje liste transformatora!"});
     }
-    res.render("monitoring/history",{'transformers':transformers});
+    var transformerDescription =[];
+    for(var i=0; i<transformers.length; i++)
+    {
+      transformerDescription[i] = {name:transformers[i].ADDRESS, id:transformers[i].ID };
+    }
+    res.render("monitoring/history",{transfDesc:JSON.stringify(transformerDescription)});
   });
 });
 
@@ -28,7 +33,20 @@ router.get("/history", function(req, res){
  * Prikaz strane za prećenje u realnom vremenu.
  */
 router.get("/real_time", function(req, res){
-  res.render("monitoring/real_time")
+  //res.render("monitoring/real_time");
+  var operator_id = req.session.user_id;
+  db.getOperatorsTransformers(operator_id, function(err, transformers){
+    if(err){
+      console.log(err);
+      res.render('error',{errMsg:"Neuspešno učitanvanje liste transformatora!"});
+    }
+    var transformerDescription =[];
+    for(var i=0; i<transformers.length; i++)
+    {
+      transformerDescription[i] = {name:transformers[i].ADDRESS, id:transformers[i].ID };
+    }
+    res.render("monitoring/real_time",{transfDesc:JSON.stringify(transformerDescription)});
+  });
 });
 
 //TODO: mislim da je ovo višak jer koristim samo POST metod

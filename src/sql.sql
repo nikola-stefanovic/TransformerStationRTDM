@@ -1,5 +1,5 @@
 CREATE TABLE TS_USER
-( id int PRIMARY KEY,
+( id int PRIMARY KEY ,
   name VARCHAR2(32) UNIQUE,
   password VARCHAR2(32),
   role VARCHAR2(16) CHECK( role IN ('director','operator'))
@@ -34,10 +34,21 @@ BEGIN
   FROM   dual;
 END;
 
+
 CREATE TABLE OPERATE
-( operator_id VARCHAR2(32),
+( id INTEGER,
+  operator_id INT,
   transformer_id INT,
-  CONSTRAINT fk_operator FOREIGN KEY(operator_id) REFERENCES ts_user(name),
-  CONSTRAINT fk_transformer FOREIGN KEY(transformer_id) REFERENCES transformer_station(id),
-  CONSTRAINT pk_operate PRIMARY KEY (operator_id,transformer_id)
+  CONSTRAINT fk_operator FOREIGN KEY(operator_id) REFERENCES ts_user(id) ON DELETE CASCADE,
+  CONSTRAINT fk_transformer FOREIGN KEY(transformer_id) REFERENCES transformer_station(id) ON DELETE CASCADE,
+  CONSTRAINT pk_operate PRIMARY KEY (id)
 );
+CREATE SEQUENCE operate_id_seq START WITH 1;
+CREATE OR REPLACE TRIGGER operate_id_tr
+BEFORE INSERT ON OPERATE
+FOR EACH ROW
+BEGIN
+  SELECT operate_id_seq.NEXTVAL
+  INTO   :new.id
+  FROM   dual;
+END;

@@ -3,18 +3,23 @@ html
     title Trafo stanice
     link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
   body
-    table(class="w3-table-all w3-hoverable")
-      thead
-        tr(class="w3-brown")
-          th Naziv
-          th
-          th
-      - for (var i = 0; i < operators.length; i++) {
-      tr
-        td #{operators[i].NAME}
-        td
-          a(class="w3-text-blue" href="/director/operator/edit/" + operators[i].NAME) Izmeni
-        td
-          a(class="w3-text-blue" href="/director/operator/delete/" + operators[i].NAME) Izbriši
-      - }
-    a(class="w3-text-blue w3-left" href="/") Nazad
+    div(class="w3-col l2") &nbsp
+    div(class="w3-col l8")
+      table(class="w3-table-all w3-hoverable")
+        thead
+          tr(class="w3-brown")
+            th Operater
+            th Nadgleda
+            th
+            th
+        - for (var i = 0; i < operators.length; i++) {
+        tr
+          td #{operators[i].NAME}
+          td #{operators[i].TRANS_MONITORING} transformatora
+          td
+            a(class="w3-text-blue" href="/director/operator/edit/" + operators[i].NAME) Izmeni
+          td
+            a(class="w3-text-blue" href="/director/operator/delete/" + operators[i].NAME) Izbriši
+        - }
+      a(class="w3-text-blue w3-left" href="/") Nazad
+    div(class="w3-col l2") &nbsp

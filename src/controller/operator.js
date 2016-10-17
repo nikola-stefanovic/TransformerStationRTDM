@@ -10,7 +10,7 @@ router.get("/list", function(req, res){
   //TODO: paginacija
   var offset = 0;
   var limit = 100;
-  db.getOperators(offset, limit, function(err, operators, hasMore){
+  db.getAllOperators(function(err, operators){
     if(err){
       console.log(err);
       return res.render("error",{errMsg:"Nije moguće pronaći operatore."});
@@ -39,9 +39,16 @@ router.get("/edit/:name", function(req, res){
     }
 
     if(operators.length != 1)
-      res.render("error",{errMsg:"Nije pronađen operator."});
-    else
-      res.render('operator/edit',{operator:operators[0]});
+      return res.render("error",{errMsg:"Nije pronađen operator."});
+
+    db.getAssignedTransformers(operators[0].ID, function(err, transformers){
+      //return console.log(JSON.stringify(transformers));
+      if(err){
+        console.log(err);
+        return res.render("error",{errMsg:"Nije moguće učitati listu transformator za operatora."});
+      }
+      res.render('operator/edit',{operator:operators[0], transformers, transformers});
+    });
   });
 });
 
@@ -109,5 +116,31 @@ router.get("/delete/:username", function(req, res){
   });
 });
 
+router.get("/allow-monitoring/:username/:user_id/:transformer_id", function(req, res){
+  var user_id = req.params.user_id;
+  var transformer_id = req.params.transformer_id;
+  var username = req.params.username;
+  db.allowMonitoring(user_id, transformer_id, function(err){
+    if(err) {
+      console.log(err);
+      return res.render("error",{errMsg:"Neuspešna zabrana nadgledanja transformatora."});
+    }
+    res.redirect("/director/operator/edit/" + username);
+  });  
+});
+
+
+router.get("/forbid-monitoring/:username/:user_id/:transformer_id", function(req, res){
+  var user_id = req.params.user_id;
+  var transformer_id = req.params.transformer_id;
+  var username = req.params.username;
+  db.forbidMonitoring(user_id, transformer_id, function(err){
+    if(err) {
+      console.log(err);
+      return res.render("error",{errMsg:"Neuspešna zabrana nadgledanja transformatora."});
+    }
+    res.redirect("/director/operator/edit/" + username);
+  });  
+});
 
 module.exports = router;
