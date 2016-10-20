@@ -1,8 +1,6 @@
 var oracledb = require('oracledb');
 oracledb.outFormat = oracledb.OBJECT;
 
-//TODO: Izbaci višak f-je
-
 var columnArray = ['ID','LOCATION_ID','BATCH_TASK_ID','VALID','READ_TIME','DEVICE_ID','SUCCEDED_COMMUNICATION_ID','IPAL','IPAA','IPAH','IPBL','IPBA','IPBH','IPCL','IPCA','IPCH','VABL','VABA','VABH','VBCL','VBCA','VBCH','VCAL','VCAA','VCAH','PPTL','PPTA','PPTH','PQTL','PQTA','PQTH','EPTC','EQTC','TEML','TEMA','TEMH','FREL','FREA','FREH','IPNL','IPNA','IPNH','IPTL','IPTA','IPTH','PPAL','PPAA','PPAH','PPBL','PPBA','PPBH','PPCL','PPCA','PPCH','PQAL','PQAA','PQAH','PQBL','PQBA','PQBH','PQCL','PQCA','PQCH','PSTL','PSTA','PSTH','PFTL','PFTA','PFTH','EPTP','EQTP','RESOLUTION_TYPE_ID'];
 var bindColumns = ":ID,:LOCATION_ID,:BATCH_TASK_ID,:VALID,:READ_TIME,:DEVICE_ID,:SUCCEDED_COMMUNICATION_ID,:IPAL,:IPAA,:IPAH,:IPBL,:IPBA,:IPBH,:IPCL,:IPCA,:IPCH,:VABL,:VABA,:VABH,:VBCL,:VBCA,:VBCH,:VCAL,:VCAA,:VCAH,:PPTL,:PPTA,:PPTH,:PQTL,:PQTA,:PQTH,:EPTC,:EQTC,:TEML,:TEMA,:TEMH,:FREL,:FREA,:FREH,:IPNL,:IPNA,:IPNH,:IPTL,:IPTA,:IPTH,:PPAL,:PPAA,:PPAH,:PPBL,:PPBA,:PPBH,:PPCL,:PPCA,:PPCH,:PQAL,:PQAA,:PQAH,:PQBL,:PQBA,:PQBH,:PQCL,:PQCA,:PQCH,:PSTL,:PSTA,:PSTH,:PFTL,:PFTA,:PFTH,:EPTP,:EQTP,:RESOLUTION_TYPE_ID";
 var columnsName =  "ID,LOCATION_ID,BATCH_TASK_ID,VALID,READ_TIME,DEVICE_ID,SUCCEDED_COMMUNICATION_ID,IPAL,IPAA,IPAH,IPBL,IPBA,IPBH,IPCL,IPCA,IPCH,VABL,VABA,VABH,VBCL,VBCA,VBCH,VCAL,VCAA,VCAH,PPTL,PPTA,PPTH,PQTL,PQTA,PQTH,EPTC,EQTC,TEML,TEMA,TEMH,FREL,FREA,FREH,IPNL,IPNA,IPNH,IPTL,IPTA,IPTH,PPAL,PPAA,PPAH,PPBL,PPBA,PPBH,PPCL,PPCA,PPCH,PQAL,PQAA,PQAH,PQBL,PQBA,PQBH,PQCL,PQCA,PQCH,PSTL,PSTA,PSTH,PFTL,PFTA,PFTH,EPTP,EQTP,RESOLUTION_TYPE_ID";
@@ -14,7 +12,9 @@ var con_str = {
      connectString: "160.99.9.199:1521/gislab.elfak.ni.ac.rs"};
 var pool;
 
-//create connectino pool
+/**
+ * Pravi 'connection pool'.
+ */
 exports.init = function(cb){
 	oracledb.createPool(con_str,
 		(err, createdPool) => {
@@ -23,7 +23,9 @@ exports.init = function(cb){
 		});
 };
 
-//release connection
+/**
+ * Služi za oslobađanje konekcije nakon izvrešenja upita.
+ */
 function doRelease(connection) {
      connection.release(
           err => {
@@ -32,6 +34,9 @@ function doRelease(connection) {
      );
 }
 
+/**
+ * Da li je konekcija spremna.
+ */
 exports.isReady = function(){
 	if(pool)
 		return true;
@@ -40,7 +45,9 @@ exports.isReady = function(){
 };
 
 
-//find rows using location id and read time interval
+/**
+ * Vraća redove koji predstavljaju merenja za određenu lokaciju i vremenski interval.
+ */
 exports.getByLocationAndReadTime = function(locationID, readAfter, readBefore, maxNumOfRows, cb){
 	pool.getConnection((err, connection) =>{
 		if(err) return cb(err);
@@ -67,8 +74,10 @@ exports.getByLocationAndReadTime = function(locationID, readAfter, readBefore, m
 	});
 };
 
-//find rows using location id and read time interval,
-//but return only specified columns
+/**
+ * Vraća redove koji predstavljaju merenja za određenu lokaciju  
+ * i vremenski interval, ali vraća samo navedene kolone iz tabele.
+ */
 exports.getByLocationAndReadTimeCol = function(locationID, readAfter, readBefore, columns, maxNumOfRows, cb){
 	pool.getConnection((err, connection) =>{
 		if(err) return cb(err);
@@ -103,24 +112,6 @@ exports.getByLocationAndReadTimeCol = function(locationID, readAfter, readBefore
 };
 
 
-exports.getNthRowByReadTimeForLocation = function(location_id, row_num, cb){
-	pool.getConnection((err, connection) =>{
-		if(err) return cb(err);
-
-		connection.execute("select * " +
-								"from ( select a.*, rownum rnum " +
-						          "from ( select * from trafo_data_history where location_id = :location_id order by read_time asc, id asc ) a " +
-						      "where rownum <= :n ) " +
-						  "where rnum >= :n",
-			[location_id, row_num],
-			(err, result) =>{
-				doRelease(connection);
-				if(err) return cb(err);
-				return cb(null, formattResult(result));
-			});
-	});
-};
-
 //TODO: sredi f-ju
 exports.insertRow = function(row, cb){
   pool.getConnection((err, connection) =>{
@@ -150,7 +141,7 @@ function formattResult(queryResult){
   return queryResult.rows;
 };
 
-//get row by id
+
 exports.getUserByName = function(name, cb){
 	pool.getConnection((err, connection) =>{
 		if(err) return cb(err);
@@ -159,13 +150,15 @@ exports.getUserByName = function(name, cb){
 			(err, result) =>{
 				doRelease(connection);
 				if(err) return cb(err);
-				return cb(null, formattResult(result));
+				return cb(null, result.rows[0]);
 			});
 	});
 };
 
 
-//find transformers in given interval - pagination
+/**
+ * Vraća niz transformatora, implementira paginiaciju.
+ */
 exports.getTransformers = function(offset, limit, cb){
   pool.getConnection((err, connection) =>{
     if(err) return cb(err);
@@ -191,20 +184,6 @@ exports.getTransformers = function(offset, limit, cb){
         return cb(null, transformers.rows);
       });
     });
-};
-
-//TODO: Mislim da se ne koristi.
-exports.getAllTransformers = function(cb){
-  pool.getConnection((err, connection) =>{
-    if(err) return cb(err);
-    connection.execute("SELECT id,address FROM transformer_station",
-      [],
-      (err,result) => {
-        doRelease(connection);
-        if(err) return cb(err);
-        return cb(null, formattResult(result));
-    });
-  });
 };
 
 exports.getTransformerById = function(transformer_id, cb) {
@@ -251,14 +230,14 @@ exports.deleteTransformer = function(transformer_id, cb) {
 	});
 };
 
-exports.addTransformer = function(location, description, allowMonitoring, cb){
+exports.addTransformer = function(id, location, description, allowMonitoring, cb){
   pool.getConnection((err, connection) =>{
     if(err) return cb(err);
 
-    var query = "INSERT INTO transformer_station(address, description, monitoring) " +
-                "VALUES (:location, :description, :allowMonitoring)";
+    var query = "INSERT INTO transformer_station(id,address, description, monitoring) " +
+                "VALUES (:id, :location, :description, :allowMonitoring)";
     connection.execute(query,
-      [location, description, allowMonitoring],
+      [id, location, description, allowMonitoring],
       {autoCommit:true},
       (err, result) =>{
         doRelease(connection);
@@ -270,8 +249,9 @@ exports.addTransformer = function(location, description, allowMonitoring, cb){
 
 
 
-//------------------Operators---------------
-//operators pagination
+/**
+ * Vraća niz operatora. Implementira paginiaciju.
+ */
 exports.getOperators = function(offset, limit, cb){
   pool.getConnection((err, connection) =>{
     if(err) return cb(err);
@@ -320,8 +300,6 @@ exports.getAllOperators = function(cb){
       });
     });
 };
-
-
 
 exports.updateUser = function(oldusername, newusername, password, cb){
   pool.getConnection((err, connection) =>{
@@ -373,7 +351,7 @@ exports.addUser = function(username, password, role, cb){
 };
 
 /**
- * Vraća transformatore koje operator može da nadgleda.
+ * Vraća transformatore koje operater može da nadgleda.
  */
 exports.getOperatorsTransformers = function(operator_id, cb){
   pool.getConnection((err, connection) =>{
@@ -396,10 +374,9 @@ exports.getOperatorsTransformers = function(operator_id, cb){
 };
 
 
-
 /**
  * Vraća sve transformatore, kao i informaciju o tome
- * da li operator može da nadgleda vraćene transformatore.
+ * da li operater može da nadgleda vraćene transformatore.
  */
 exports.getAssignedTransformers = function(operator_id, cb){
   pool.getConnection((err, connection) =>{

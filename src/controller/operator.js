@@ -32,22 +32,22 @@ router.get("/create", function(req, res){
 router.get("/edit/:name", function(req, res){
 
   var operator_name = req.params.name;//sesija
-  db.getUserByName(operator_name, function(err,operators){
+  db.getUserByName(operator_name, function(err,operator){
     if(err){
       console.log(err);
       return res.render("error",{errMsg:"Nije moguća izmena operatora."});
     }
 
-    if(operators.length != 1)
+    if(!operator)
       return res.render("error",{errMsg:"Nije pronađen operator."});
 
-    db.getAssignedTransformers(operators[0].ID, function(err, transformers){
+    db.getAssignedTransformers(operator.ID, function(err, transformers){
       //return console.log(JSON.stringify(transformers));
       if(err){
         console.log(err);
         return res.render("error",{errMsg:"Nije moguće učitati listu transformator za operatora."});
       }
-      res.render('operator/edit',{operator:operators[0], transformers, transformers});
+      res.render('operator/edit',{operator:operator, transformers, transformers});
     });
   });
 });
@@ -67,7 +67,7 @@ router.post("/create", function(req, res){
       return res.render("error",{errMsg:"Neuspešno dodavanje operatora."});
     }
     console.log("Users:" + JSON.stringify(user));
-    if(user.length != 0)
+    if(user)
       return res.render("error",{errMsg:"Operator postoji."});
     //if operator doesn't exist
     //add new operator to database

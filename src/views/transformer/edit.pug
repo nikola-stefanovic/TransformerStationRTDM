@@ -12,7 +12,6 @@ html
             label(class="w3-label") Lokacija
             input(class="w3-input w3-border" name="location" type="text" value="" + transformer.ADDRESS)
           p
-
             label(class="w3-label") Opis
             br
             textarea(class="w3-border" name="description" rows="4" cols="40") #{transformer.DESCRIPTION}
@@ -21,4 +20,4 @@ html
             label(class="w3-validate") Dozvoli nadgledanje
           p
             button(class="w3-btn w3-blue-grey") Sačuvaj
-            a(class="w3-text-blue w3-right" href="/") Nazad
+            a(class="w3-text-blue w3-right" href="/director/transformer/list") Nazad

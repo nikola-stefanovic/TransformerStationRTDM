@@ -10,14 +10,14 @@ function TransformerChart(diagramDescription){
 }
 
 /**
- * Draw empty graphic.
+ * Draw an empty graphic.
  */
 TransformerChart.prototype.drawEmptyChart = function(){
     $(this.container).highcharts('StockChart', this.chartSettings);
 };
 
 /**
- * Get data from server and draw a chart.
+ * Get data from the server and draw a chart.
  */
 TransformerChart.prototype.drawChart = function(location_id, read_after, read_before, columnsName){
   this._getData(location_id, read_after, read_before, columnsName, function(err, data){
@@ -30,11 +30,12 @@ TransformerChart.prototype.drawChart = function(location_id, read_after, read_be
       var serie = self._extractSerieByName(colName,data);
       self.seriesOptions[i] = {
           name: self.diagramDescription.labels[i],
+          //type:'spline',
           data: serie
       };
     });
 
-    //create chart
+    //create a chart
     this.chartSettings.series = this.seriesOptions;
     //console.log(JSON.stringify(this.chartSettings.series));
     $(this.container).highcharts('StockChart', this.chartSettings);
@@ -129,6 +130,7 @@ TransformerChart.prototype._extractSerieByName = function(columnName, data){
   for(var i=0; i<data.length; i++){
     x = Date.parse(data[i]['READ_TIME']);//time of measuring
     y = data[i][columnName];//measured value
+    //console.log("Tacka:("+new Date(x).toString()+","+y+")");
     serie.push([x, y]);
   }
   return serie;
@@ -141,7 +143,6 @@ TransformerChart.prototype._extractSerieByName = function(columnName, data){
  * @param  {String-Date}   read_before upper bound of interval.
  * @param  {String[]}   columnsName which values should server return.
  * @param  {Function} cb  callback function.
-
  */
 TransformerChart.prototype._getData = function(location_id, read_after, read_before, columnsName, cb){
   var send_data = {location_id:location_id, read_after:read_after, read_before:read_before, columns:columnsName };

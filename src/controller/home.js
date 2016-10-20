@@ -34,7 +34,7 @@ router.post("/login",function(req, res){
   var sess = req.session;
 
   //find user in database
-  db.getUserByName(name, function(err, users){
+  db.getUserByName(name, function(err, user){
     if(err){
       //databse error
       console.log(err);
@@ -42,13 +42,13 @@ router.post("/login",function(req, res){
     }
 
     //check if login is correct
-    if(users.length == 1 && users[0].PASSWORD == password){
+    if(user && user.PASSWORD == password){
       //set session
       sess.username = name;
-      sess.role = users[0].ROLE;
-      sess.user_id = users[0].ID;
+      sess.role = user.ROLE;
+      sess.user_id = user.ID;
       //redirect to another page
-      if(users[0].ROLE == 'director')
+      if(user.ROLE == 'director')
         res.redirect("/director");
       else
         res.redirect("/monitoring");

@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 var db = require('../models/db_access.js');
 
-//show page with details about transformers
+/**
+ * Prikazuje stranicu listom svih transformatora.
+ */
 router.get("/list", function(req, res){
   //TODO: paginacija
   var offset = 1;
@@ -16,12 +18,16 @@ router.get("/list", function(req, res){
   });
 });
 
-//show 'create' page
+/**
+ * Prikazuje stranicu za dodavanje transformatora.
+ */
 router.get("/create", function(req, res){
   res.render("transformer/create");
 });
 
-//show 'edit' page
+/**
+ * Prikazuje stranicu za izmenu informacija o transformatoru.
+ */
 router.get("/edit/:id", function(req, res){
   var trafo_id = req.params.id;
   db.getTransformerById(trafo_id, function(err,transformer){
@@ -38,13 +44,16 @@ router.get("/edit/:id", function(req, res){
 });
 
 
-//insert transformer in database
+/**
+ * Dodaje novi transformator.
+ */
 router.post("/create", function(req, res){
   var body = req.body;
   var location = body.location;
   var description = body.description;
+  var transformer_id = body.transformer_id;
   var allowMonitoring = (body.monitoring == "on" ? 1 : 0);
-  db.addTransformer(location, description, allowMonitoring, function(err){
+  db.addTransformer(transformer_id, location, description, allowMonitoring, function(err){
       if(err){
         console.log("Greška!" + err);
         return res.render("error",{errMsg:"Neuspešno dodavanje transformatora."});
@@ -53,15 +62,17 @@ router.post("/create", function(req, res){
   });
 });
 
-//update transformer in database
+/**
+ * Apdejtuje transformator.
+ */
 router.post("/edit/:id", function(req, res){
   var body = req.body;
-  var transformer_id = req.params.id;
+  var transformerId = req.params.id;
   var location = body.location;
   var description = body.description;
   var allowMonitoring = (body.monitoring == "on" ? 1 : 0);
 
-  db.updateTransformer(transformer_id, location, description, allowMonitoring, function(err){
+  db.updateTransformer(transformerId, location, description, allowMonitoring, function(err){
     if(err){
       console.log("Greška!" + err);
       return res.redirect("error",{errMsg:"Neuspešna izmena transformatora."});
@@ -71,7 +82,9 @@ router.post("/edit/:id", function(req, res){
 
 });
 
-//delete transformer in database
+/**
+ * Briše transformator.
+ */
 router.get("/delete/:id", function(req, res){
   //delete transformer from database
   var trafo_id = req.params.id;

@@ -1,7 +1,17 @@
 var router = require('express').Router();
 var db = require('../models/db_access.js');
 
-maxNumOfRows = 1000; //TODO: Mislim da može -1 za beskonačno
+//check autorzation before processing a request
+router.use(function(req, res, next){
+  var sess = req.session;
+  //if user isn't logged or does not have a permission
+  if(!sess.username || sess.role!="operator"){
+    //redirect to the home page
+    res.redirect("/");
+    return;
+  }
+  next();
+});
 
 /**
  * Prikazuje početnu stranicu operatora.
@@ -11,7 +21,7 @@ router.get("/", function(req, res){
 });
 
 /**
- * Prikaz strane za pregled istorije merenja.
+ * Prikaz stranice za pregled istorije merenja.
  */
 router.get("/history", function(req, res){
   var operator_id = req.session.user_id;
@@ -60,14 +70,14 @@ router.get("/loc-read-time/:location_id/:read_after/:read_before", function(req,
     return;
   }
 
-  db.getByLocationAndReadTime(locationId,readAfter, readBefore, maxNumOfRows, function(err,data){
+  db.getByLocationAndReadTime(locationId,readAfter, readBefore, -1, function(err,data){
     if(err) return next(err);
     res.json(data);
   });
 });
 
 /**
- * Na POST zahtev vraća redove iz baze o izmerenim veličinama
+ * Na POST zahtev vraća redove iz baze o izmerenim veličinama,
  * za određenu lokaciju i određeni vremenski interval.
  */
 router.post("/", function(req, res, next){
@@ -88,11 +98,46 @@ router.post("/", function(req, res, next){
     columns = [];
   }
 
-  db.getByLocationAndReadTimeCol(location_id,read_after, read_before, columns, maxNumOfRows, function(err,data){
+  db.getByLocationAndReadTimeCol(location_id,read_after, read_before, columns, -1, function(err,data){
     if(err) return next(err);
     res.json(data);
   });
 
+});
+
+
+/**
+ * Prikazuje stranicu za promenu šifre.
+ */
+router.get("/login-config", function(req, res){
+  var old_username = req.session.username;
+  res.render("operator/login_config");
+});
+
+/**
+ * Obrađuje zahtev za promenu šifre.
+ */
+router.post("/login-config", function(req, res){
+  var username = req.session.username;
+  var oldPassword = req.body.old_password;
+  var newPassword = req.body.new_password;
+  db.getUserByName(username, function(err, user){
+    if(err || !user){
+      console.log(err);
+      return res.render("error",{errMsg:"Greška prilikom promene šifre."});
+    }
+
+    if(oldPassword != user.PASSWORD)
+      return res.render("operator/login_config", {errorMsg:"Nevalidna stara šifra."});
+
+    db.updateUser(username, username, newPassword, function(err){
+      if(err){
+        console.log(err);
+        res.render("error",{errorMsg:"Nije moguće promeniti šifru."});
+      }
+      res.redirect("/logout");
+    });
+  });
 });
 
 module.exports = router;
